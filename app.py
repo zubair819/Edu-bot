@@ -12,12 +12,6 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 app = Flask(__name__,static_folder='static', template_folder='templates')
 app.secret_key = 'your_secret_key'
 
-# MySQL configurations
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'zubair084'
-# app.config['MYSQL_DB'] = 'edubot_db'
-
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
