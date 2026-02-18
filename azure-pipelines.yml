@@ -39,7 +39,7 @@ stages:
     displayName: Deploy Stage
     dependsOn: Package
     jobs:
-    - job: Deploy Job
+    - job: DeployJob
       steps:
       - task: AzureWebApp@1
         inputs:
