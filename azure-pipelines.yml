@@ -8,46 +8,57 @@ trigger:
 
 pool:
   vmImage: ubuntu-latest
-stages:
-  - stage: Build
-    displayName: Build Stage
-    jobs:
-    - job: BuildJob
-      steps:
-      - task: UsePythonVersion@0
-        inputs:
-          versionSpec: '3.10'
-  
-      - script: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-        displayName: "Install dependencies"
-  - stage: Package
-    displayName: Package Stage
-    dependsOn: Build
-    jobs:
-    - job: PackageJob
-      steps:
-      - task: ArchiveFiles@2
-        inputs:
-          rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
-          includeRootFolder: false
-          archiveType: zip
-          archiveFile: '$(Build.ArtifactStagingDirectory)/edubot.zip'
-          replaceExistingArchive: true
-  - stage: Deploy
-    displayName: Deploy Stage
-    dependsOn: Package
-    jobs:
-    - job: DeployJob
-      steps:
-       - task: DownloadPipelineArtifact@2
-        inputs:
-          artifact: 'drop'
-          path: '$(Pipeline.Workspace)'
 
-      - task: AzureWebApp@1
-        inputs:
-          azureSubscription: 'azure-service-connect'
-          appName: 'edubot-app'
-          package: '$(Pipeline.Workspace)/edubot.zip'
+stages:
+- stage: Build
+  displayName: Build Stage
+  jobs:
+  - job: BuildJob
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.10'
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: "Install dependencies"
+
+
+- stage: Package
+  displayName: Package Stage
+  dependsOn: Build
+  jobs:
+  - job: PackageJob
+    steps:
+    - task: ArchiveFiles@2
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: '$(Build.ArtifactStagingDirectory)/edubot.zip'
+        replaceExistingArchive: true
+
+    - task: PublishPipelineArtifact@1
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/edubot.zip'
+        artifact: 'drop'
+
+
+- stage: Deploy
+  displayName: Deploy Stage
+  dependsOn: Package
+  jobs:
+  - job: DeployJob
+    steps:
+
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: 'drop'
+        path: '$(Pipeline.Workspace)'
+
+    - task: AzureWebApp@1
+      inputs:
+        azureSubscription: 'azure-service-connect'
+        appName: 'edubot-app'
+        package: '$(Pipeline.Workspace)/edubot.zip'
