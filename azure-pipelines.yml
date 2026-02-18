@@ -41,6 +41,12 @@ stages:
     jobs:
     - job: DeployJob
       steps:
+      - task: DownloadBuildArtifacts@0
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'drop'
+              downloadPath: '$(Pipeline.Workspace)'
       - task: AzureWebApp@1
         inputs:
           azureSubscription: 'azure-service-connect'
