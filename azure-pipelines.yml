@@ -50,4 +50,4 @@ stages:
         inputs:
           azureSubscription: 'azure-service-connect'
           appName: 'edubot-app'
-          package: '$(Build.ArtifactStagingDirectory)/edubot.zip'
+          package: '$(Pipeline.Workspace)/edubot.zip'
